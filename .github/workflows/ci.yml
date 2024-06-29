@@ -43,4 +43,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/nextcloud-webdav-api:${{ steps.extract_tag.outputs.tag }}
+          tags: ghcr.io/Phoenox/nextcloud-webdav-api:${{ steps.extract_tag.outputs.tag }}
