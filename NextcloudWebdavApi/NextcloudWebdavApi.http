@@ -1,6 +1,20 @@
 @NextcloudWebdavApi_HostAddress = http://localhost:5125
 
-GET {{NextcloudWebdavApi_HostAddress}}/weatherforecast/
-Accept: application/json
+POST {{NextcloudWebdavApi_HostAddress}}/files
+Content-Type: application/json
+
+{
+  "Path": "foo.txt",
+  "Content": "barbla"
+}
+
+###
+
+GET {{NextcloudWebdavApi_HostAddress}}/files
+Content-Type: application/json
+
+{
+  "Path": "foo.txt"
+}
 
 ###
