@@ -1,17 +1,22 @@
 namespace NextcloudWebdavApi;
 
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("[controller]")]
-public class FilesController : ControllerBase
+public class FilesController(WebDAVClient.IClient webdavClient) : ControllerBase
 {
 	[HttpPost]
-	public IActionResult PostFile([FromBody] PostFileRequest request)
+	public async Task<IActionResult> PostFile([FromBody] PostFileRequest request)
 	{
 		try
 		{
-			Files.CreateOrUpdateFile(request.Path, request.Content);
+			var directory = Path.GetDirectoryName(request.Path);
+			var fileName = Path.GetFileName(request.Path);
+			var byteArray = Encoding.UTF8.GetBytes(request.Content);
+			var stream = new MemoryStream(byteArray);
+			await webdavClient.Upload(directory, stream, fileName);
 			return Ok();
 		}
 		catch (Exception ex)
@@ -21,11 +26,13 @@ public class FilesController : ControllerBase
 	}
 
 	[HttpGet]
-	public IActionResult GetFile([FromBody] GetFileRequest request)
+	public async Task<IActionResult> GetFile([FromBody] GetFileRequest request)
 	{
 		try
 		{
-			var content = Files.GetFile(request.Path);
+			var stream = await webdavClient.Download(request.Path);
+			using var reader = new StreamReader(stream);
+			var content = await reader.ReadToEndAsync();
 			return Ok(content);
 		}
 		catch (Exception ex)
