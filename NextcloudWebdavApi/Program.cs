@@ -1,4 +1,5 @@
 using System.Net;
+using NextcloudWebdavApi;
 using WebDAVClient;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,11 @@ builder.Services.AddSingleton<IClient, Client>(_ =>
 
 var app = builder.Build();
 
+if (webdavOptions is not null)
+	app.Logger.LogInformation("Webdav configuration: {webdavOptions}", webdavOptions with { Password = "********" });
+else
+	app.Logger.LogCritical("Webdav configuration not found");
+
 if (app.Environment.IsDevelopment())
 {
 	app.UseSwagger();
@@ -30,11 +36,3 @@ app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
-
-public record WebdavOptions
-{
-	public string Username { get; init; } = string.Empty;
-	public string Password { get; init; } = string.Empty;
-	public string Server { get; init; } = string.Empty;
-	public string BasePath { get; init; } = string.Empty;
-}
