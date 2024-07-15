@@ -2,9 +2,10 @@
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
+RUN apt install -y clang
 COPY . ./
 RUN dotnet restore
-RUN dotnet publish -c $BUILD_CONFIGURATION -o out
+RUN dotnet publish -c $BUILD_CONFIGURATION -o out NextcloudWebdavApi/NextcloudWebdavApi.csproj
 
 FROM scratch as final
 USER $APP_UID
