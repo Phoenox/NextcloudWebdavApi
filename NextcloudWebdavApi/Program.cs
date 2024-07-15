@@ -2,37 +2,36 @@ using System.Net;
 using NextcloudWebdavApi;
 using WebDAVClient;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateSlimBuilder(args);
 
-var webdavOptions = builder.Configuration.GetSection("Webdav").Get<WebdavOptions>();
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+	options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
+});
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
+var webdavOptions = new WebdavOptions
+{
+	Username = Environment.GetEnvironmentVariable("WEBDAV__USERNAME") ?? string.Empty,
+	Password = Environment.GetEnvironmentVariable("WEBDAV__PASSWORD") ?? string.Empty,
+	Server = Environment.GetEnvironmentVariable("WEBDAV__SERVER") ?? string.Empty,
+	BasePath = Environment.GetEnvironmentVariable("WEBDAV__BASEPATH") ?? string.Empty,
+};
+
 builder.Services.AddSingleton<IClient, Client>(_ =>
 {
-	var credential = new NetworkCredential(webdavOptions?.Username, webdavOptions?.Password);
+	var credential = new NetworkCredential(webdavOptions.Username, webdavOptions.Password);
 	var client = new Client(credential);
-	client.Server = webdavOptions?.Server;
-	client.BasePath = webdavOptions?.BasePath;
+	client.Server = webdavOptions.Server;
+	client.BasePath = webdavOptions.BasePath;
 	return client;
 });
 
 var app = builder.Build();
 
-if (webdavOptions is not null)
-	app.Logger.LogInformation("Webdav configuration: {webdavOptions}", webdavOptions with { Password = "********" });
-else
-	app.Logger.LogCritical("Webdav configuration not found");
+var fileApi = app.MapGroup("/files");
+fileApi.MapPost("/", FileApi.UploadFile);
+fileApi.MapGet("/", FileApi.DownloadFile);
 
-if (app.Environment.IsDevelopment())
-{
-	app.UseSwagger();
-	app.UseSwaggerUI();
-}
+app.Logger.LogInformation("Webdav configuration: {WebdavOptions}", webdavOptions with { Password = "********" });
 
-app.UseHttpsRedirection();
-
-app.MapControllers();
-
-app.Run();
+await app.RunAsync();
