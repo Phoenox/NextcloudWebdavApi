@@ -7,8 +7,7 @@ COPY . ./
 RUN dotnet restore
 RUN dotnet publish -c $BUILD_CONFIGURATION -o out NextcloudWebdavApi/NextcloudWebdavApi.csproj
 
-FROM scratch as final
-USER $APP_UID
+FROM scratch AS final
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
