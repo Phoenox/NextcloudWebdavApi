@@ -1,8 +1,8 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+﻿FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-RUN apt install -y clang
+RUN apt update && apt install -y clang
 COPY . ./
 RUN dotnet restore
 RUN dotnet publish -c $BUILD_CONFIGURATION -o out NextcloudWebdavApi/NextcloudWebdavApi.csproj
