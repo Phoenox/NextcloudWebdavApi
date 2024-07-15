@@ -2,7 +2,7 @@
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-RUN apt update && apt install -y clang
+RUN apt update && apt install -y clang zlib1g-dev
 COPY . ./
 RUN dotnet restore
 RUN dotnet publish -c $BUILD_CONFIGURATION -o out NextcloudWebdavApi/NextcloudWebdavApi.csproj
