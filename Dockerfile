@@ -11,5 +11,6 @@ FROM scratch AS final
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
-COPY --from=build /src/out .
-ENTRYPOINT ["./NextcloudWebdavApi.dll"]
+COPY --from=build /src/out/appsettings.json .
+COPY --from=build /src/out/NextcloudWebdavApi .
+ENTRYPOINT ["./NextcloudWebdavApi"]
