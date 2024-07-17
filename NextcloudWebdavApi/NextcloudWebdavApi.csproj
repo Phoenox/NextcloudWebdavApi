@@ -4,9 +4,13 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <InvariantGlobalization>true</InvariantGlobalization>
+        
         <PublishAot>true</PublishAot>
+        <StaticallyLinked>true</StaticallyLinked>
+        <StaticExecutable>true</StaticExecutable>
+
+        <InvariantGlobalization>true</InvariantGlobalization>
+        <StripSymbols>true</StripSymbols>
     </PropertyGroup>
 
     <ItemGroup>
